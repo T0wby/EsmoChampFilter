@@ -23,9 +23,32 @@ namespace EsmoChamps.Data
             "EsmoChamps",
             "Champions.db");
 
-            Directory.CreateDirectory(Path.GetDirectoryName(dbPath)!);
+            PrepareDatabase(dbPath);
 
             options.UseSqlite($"Data Source={dbPath}");
+        }
+
+        private void PrepareDatabase(string dbPath)
+        {
+            var directory = Path.GetDirectoryName(dbPath)!;
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            if (!File.Exists(dbPath))
+            {
+                var sourcePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "MasterData", "Champions.db");
+
+                if (File.Exists(sourcePath))
+                {
+                    File.Copy(sourcePath, dbPath);
+                }
+                else
+                {
+                    throw new FileNotFoundException($"Seed database not found at {sourcePath}");
+                }
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
