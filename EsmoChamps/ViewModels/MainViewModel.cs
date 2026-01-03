@@ -78,6 +78,7 @@ namespace EsmoChamps.ViewModels
                 _searchText = value;
                 OnPropertyChanged();
                 ApplyFilters();
+                ApplySorting();
             }
         }
 
@@ -102,6 +103,7 @@ namespace EsmoChamps.ViewModels
                 _selectedRoleFilter = value;
                 OnPropertyChanged();
                 ApplyFilters();
+                ApplySorting();
             }
         }
 
@@ -114,6 +116,7 @@ namespace EsmoChamps.ViewModels
                 _selectedRangeTypeFilter = value;
                 OnPropertyChanged();
                 ApplyFilters();
+                ApplySorting();
             }
         }
 
@@ -126,6 +129,7 @@ namespace EsmoChamps.ViewModels
                 _selectedChampTypeFilter = value;
                 OnPropertyChanged();
                 ApplyFilters();
+                ApplySorting();
             }
         }
 
@@ -158,6 +162,71 @@ namespace EsmoChamps.ViewModels
         public ObservableCollection<DefaultSortingOptions> AvailableSortingOptions { get; set; }
 
         public int FilteredChampionCount => FilteredChampions?.Count ?? 0;
+        #endregion
+
+        #region Strength Filter and Sort Properties
+        private StrengthTitle? _selectedStrengthSort;
+        public StrengthTitle? SelectedStrengthSort
+        {
+            get => _selectedStrengthSort;
+            set
+            {
+                _selectedStrengthSort = value;
+                OnPropertyChanged();
+                ApplySorting();
+            }
+        }
+
+        private bool _sortStrengthAscending = false;
+        public bool SortStrengthAscending
+        {
+            get => _sortStrengthAscending;
+            set
+            {
+                _sortStrengthAscending = value;
+                OnPropertyChanged();
+                ApplySorting();
+            }
+        }
+
+        private StrengthTitle? _selectedStrengthValueFilter;
+        public StrengthTitle? SelectedStrengthValueFilter
+        {
+            get => _selectedStrengthValueFilter;
+            set
+            {
+                _selectedStrengthValueFilter = value;
+                OnPropertyChanged();
+                ApplyFilters();
+            }
+        }
+
+        private int? _strengthMinValueFilter;
+        public int? StrengthMinValueFilter
+        {
+            get => _strengthMinValueFilter;
+            set
+            {
+                _strengthMinValueFilter = value;
+                OnPropertyChanged();
+                ApplyFilters();
+            }
+        }
+
+        private int? _strengthMaxValueFilter;
+        public int? StrengthMaxValueFilter
+        {
+            get => _strengthMaxValueFilter;
+            set
+            {
+                _strengthMaxValueFilter = value;
+                OnPropertyChanged();
+                ApplyFilters();
+            }
+        }
+
+        public ObservableCollection<StrengthTitle> AvailableStrengthsForSort { get; set; }
+        public ObservableCollection<StrengthTitle> AvailableStrengthsForValueFilter { get; set; }
         #endregion
 
         #region Commands
@@ -244,6 +313,16 @@ namespace EsmoChamps.ViewModels
                 strength.PropertyChanged += StrengthFilter_PropertyChanged;
             }
 
+            var strengthTitlesForSort = _context.StrengthTitles.OrderBy(s => s.Title).ToList();
+            AvailableStrengthsForSort = new ObservableCollection<StrengthTitle>(strengthTitlesForSort);
+            AvailableStrengthsForSort.Insert(0, new StrengthTitle { Id = 0, Title = "No Strength Sort" });
+
+            // Load strengths for value filtering
+            var strengthTitlesForFilter = _context.StrengthTitles.OrderBy(s => s.Title).ToList();
+            AvailableStrengthsForValueFilter = new ObservableCollection<StrengthTitle>(strengthTitlesForFilter);
+            AvailableStrengthsForValueFilter.Insert(0, new StrengthTitle { Id = 0, Title = "No Strength Filter" });
+
+
             ReloadChampions();
 
             //AllChampions = new ObservableCollection<Champion>((AllChampions ?? new ObservableCollection<Champion>()).OrderBy(c => c.Name).ToList());
@@ -253,6 +332,8 @@ namespace EsmoChamps.ViewModels
             SelectedRangeTypeFilter = AvailableRangeTypes[0];
             SelectedChampTypeFilter = AvailableChampTypes[0];
             SelectedSortingOption = AvailableSortingOptions[0];
+            SelectedStrengthSort = AvailableStrengthsForSort[0];
+            SelectedStrengthValueFilter = AvailableStrengthsForValueFilter[0];
         }
 
         private void StrengthFilter_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -315,44 +396,73 @@ namespace EsmoChamps.ViewModels
         #region Filter Methods
         private void ApplySorting()
         {
-            if (SelectedSortingOption == null) return;
 
-            switch (SelectedSortingOption)
+            if (FilteredChampions == null || !FilteredChampions.Any()) return;
+
+            if (SelectedStrengthSort != null && SelectedStrengthSort.Id != 0)
             {
-                case DefaultSortingOptions.None:
-                case DefaultSortingOptions.NameAsc:
-                    FilteredChampions = new ObservableCollection<Champion>(FilteredChampions.OrderBy(c => c.Name));
-                    break;
-                case DefaultSortingOptions.NameDesc:
-                    FilteredChampions = new ObservableCollection<Champion>(FilteredChampions.OrderByDescending(c => c.Name));
-                    break;
-                case DefaultSortingOptions.RoleAsc:
-                    FilteredChampions = new ObservableCollection<Champion>(FilteredChampions.OrderBy(c => c.Role.Name));
-                    break;
-                case DefaultSortingOptions.RoleDesc:
-                    FilteredChampions = new ObservableCollection<Champion>(FilteredChampions.OrderByDescending(c => c.Role.Name));
-                    break;
-                case DefaultSortingOptions.EarlyGameAsc:
-                    FilteredChampions = new ObservableCollection<Champion>(FilteredChampions.OrderBy(c => c.PowerCurveStart));
-                    break;
-                case DefaultSortingOptions.EarlyGameDesc:
-                    FilteredChampions = new ObservableCollection<Champion>(FilteredChampions.OrderByDescending(c => c.PowerCurveStart));
-                    break;
-                case DefaultSortingOptions.MidGameAsc:
-                    FilteredChampions = new ObservableCollection<Champion>(FilteredChampions.OrderBy(c => c.PowerCurveMid));
-                    break;
-                case DefaultSortingOptions.MidGameDesc:
-                    FilteredChampions = new ObservableCollection<Champion>(FilteredChampions.OrderByDescending(c => c.PowerCurveMid));
-                    break;
-                case DefaultSortingOptions.LateGameAsc:
-                    FilteredChampions = new ObservableCollection<Champion>(FilteredChampions.OrderBy(c => c.PowerCurveEnd));
-                    break;
-                case DefaultSortingOptions.LateGameDesc:
-                    FilteredChampions = new ObservableCollection<Champion>(FilteredChampions.OrderByDescending(c => c.PowerCurveEnd));
-                    break;
-                default:
-                    break;
+                if (SortStrengthAscending)
+                {
+                    FilteredChampions = new ObservableCollection<Champion>(
+                        FilteredChampions.OrderBy(c =>
+                        {
+                            var strength = c.Strengths.FirstOrDefault(s => s.StrengthTitleId == SelectedStrengthSort.Id);
+                            return strength?.Value ?? -1; // Champions without this strength go to the bottom
+                        })
+                    );
+                }
+                else
+                {
+                    FilteredChampions = new ObservableCollection<Champion>(
+                        FilteredChampions.OrderByDescending(c =>
+                        {
+                            var strength = c.Strengths.FirstOrDefault(s => s.StrengthTitleId == SelectedStrengthSort.Id);
+                            return strength?.Value ?? -1; // Champions without this strength go to the bottom
+                        })
+                    );
+                }
             }
+            else if (SelectedSortingOption != null)
+            {
+                switch (SelectedSortingOption)
+                {
+                    case DefaultSortingOptions.None:
+                    case DefaultSortingOptions.NameAsc:
+                        FilteredChampions = new ObservableCollection<Champion>(FilteredChampions.OrderBy(c => c.Name));
+                        break;
+                    case DefaultSortingOptions.NameDesc:
+                        FilteredChampions = new ObservableCollection<Champion>(FilteredChampions.OrderByDescending(c => c.Name));
+                        break;
+                    case DefaultSortingOptions.RoleAsc:
+                        FilteredChampions = new ObservableCollection<Champion>(FilteredChampions.OrderBy(c => c.Role.Name));
+                        break;
+                    case DefaultSortingOptions.RoleDesc:
+                        FilteredChampions = new ObservableCollection<Champion>(FilteredChampions.OrderByDescending(c => c.Role.Name));
+                        break;
+                    case DefaultSortingOptions.EarlyGameAsc:
+                        FilteredChampions = new ObservableCollection<Champion>(FilteredChampions.OrderBy(c => c.PowerCurveStart));
+                        break;
+                    case DefaultSortingOptions.EarlyGameDesc:
+                        FilteredChampions = new ObservableCollection<Champion>(FilteredChampions.OrderByDescending(c => c.PowerCurveStart));
+                        break;
+                    case DefaultSortingOptions.MidGameAsc:
+                        FilteredChampions = new ObservableCollection<Champion>(FilteredChampions.OrderBy(c => c.PowerCurveMid));
+                        break;
+                    case DefaultSortingOptions.MidGameDesc:
+                        FilteredChampions = new ObservableCollection<Champion>(FilteredChampions.OrderByDescending(c => c.PowerCurveMid));
+                        break;
+                    case DefaultSortingOptions.LateGameAsc:
+                        FilteredChampions = new ObservableCollection<Champion>(FilteredChampions.OrderBy(c => c.PowerCurveEnd));
+                        break;
+                    case DefaultSortingOptions.LateGameDesc:
+                        FilteredChampions = new ObservableCollection<Champion>(FilteredChampions.OrderByDescending(c => c.PowerCurveEnd));
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            
             OnPropertyChanged(nameof(FilteredChampions));
             OnPropertyChanged(nameof(FilteredChampionCount));
         }
@@ -411,6 +521,20 @@ namespace EsmoChamps.ViewModels
                         c.Strengths.Any(cs => cs.StrengthTitleId == strengthId)));
             }
 
+            if (SelectedStrengthValueFilter != null && SelectedStrengthValueFilter.Id != 0)
+            {
+                filtered = filtered.Where(c =>
+                {
+                    var strength = c.Strengths.FirstOrDefault(s => s.StrengthTitleId == SelectedStrengthValueFilter.Id);
+                    if (strength == null) return false;
+
+                    bool matchesMin = !StrengthMinValueFilter.HasValue || strength.Value >= StrengthMinValueFilter.Value;
+                    bool matchesMax = !StrengthMaxValueFilter.HasValue || strength.Value <= StrengthMaxValueFilter.Value;
+
+                    return matchesMin && matchesMax;
+                });
+            }
+
             FilteredChampions = new ObservableCollection<Champion>(filtered);
             OnPropertyChanged(nameof(FilteredChampions));
             OnPropertyChanged(nameof(FilteredChampionCount));
@@ -422,12 +546,19 @@ namespace EsmoChamps.ViewModels
             SelectedRoleFilter = AvailableRoles[0];
             SelectedRangeTypeFilter = AvailableRangeTypes[0];
             SelectedChampTypeFilter = AvailableChampTypes[0];
+            SelectedSortingOption = AvailableSortingOptions[0];
+            SelectedStrengthSort = AvailableStrengthsForSort[0];
+            SelectedStrengthValueFilter = AvailableStrengthsForValueFilter[0];
+            SortStrengthAscending = false;
+
             MechanicsMinFilter = null;
             MechanicsMaxFilter = null;
             MacroMinFilter = null;
             MacroMaxFilter = null;
             TacticalMinFilter = null;
             TacticalMaxFilter = null;
+            StrengthMinValueFilter = null;
+            StrengthMaxValueFilter = null;
 
             foreach (var strength in AllStrengthsForFilter)
             {

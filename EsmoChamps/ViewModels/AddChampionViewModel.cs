@@ -45,7 +45,17 @@ namespace EsmoChamps.ViewModels
         public int ChampionId { get; }
 
         public string Name { get; set; }
-        public string ImagePath { get; set; }
+
+        private string _imagePath;
+        public string ImagePath
+        {
+            get => _imagePath;
+            set
+            {
+                _imagePath = value;
+                OnPropertyChanged();
+            }
+        }
 
         private int _selectedRoleId;
         public int SelectedRoleId

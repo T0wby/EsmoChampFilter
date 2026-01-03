@@ -14,6 +14,7 @@
         <converter:FirstLetterConverter x:Key="FirstLetterConverter"/>
         <converter:RangeToGridLengthConverter x:Key="RangeToGridLengthConverter"/>
         <converter:IsSelectedConverter x:Key="IsSelectedConverter"/>
+        <converter:NotZeroConverter x:Key="NotZeroConverter"/>
     </Window.Resources>
 
     <Grid>
@@ -242,6 +243,74 @@
                             </ItemsControl>
                         </ScrollViewer>
                     </Border>
+
+                    <Separator Background="#3A3A44" Margin="0,15"/>
+
+                    <!-- Strength Value Filter -->
+                    <TextBlock Text="STRENGTH VALUE FILTER" 
+           FontSize="12" 
+           FontWeight="SemiBold"
+           Opacity="0.9" 
+           Margin="0,0,0,10"/>
+
+                    <TextBlock Text="Filter by Strength" FontSize="11" Opacity="0.7" Margin="0,0,0,5"/>
+                    <ComboBox ItemsSource="{Binding AvailableStrengthsForValueFilter}"
+          SelectedItem="{Binding SelectedStrengthValueFilter}"
+          DisplayMemberPath="Title"
+          Padding="8"
+          Margin="0,0,0,10"
+          Background="#2A2A32"
+          Foreground="#2A2A32"
+          BorderBrush="#3A3A44"/>
+
+                    <TextBlock Text="Value Range" FontSize="11" Opacity="0.7" Margin="0,0,0,5"/>
+                    <Grid Margin="0,0,0,15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0" 
+             Text="{Binding StrengthMinValueFilter, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}"
+             Background="#2A2A32"
+             Foreground="White"
+             Padding="5"
+             BorderBrush="#3A3A44"
+             IsEnabled="{Binding SelectedStrengthValueFilter.Id, Converter={StaticResource NotZeroConverter}}"/>
+                        <TextBlock Grid.Column="1" Text=" - " VerticalAlignment="Center" Margin="5,0"/>
+                        <TextBox Grid.Column="2" 
+             Text="{Binding StrengthMaxValueFilter, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}"
+             Background="#2A2A32"
+             Foreground="White"
+             Padding="5"
+             BorderBrush="#3A3A44"
+             IsEnabled="{Binding SelectedStrengthValueFilter.Id, Converter={StaticResource NotZeroConverter}}"/>
+                    </Grid>
+
+                    <Separator Background="#3A3A44" Margin="0,0,0,15"/>
+
+                    <!-- Strength Sort -->
+                    <TextBlock Text="SORT BY STRENGTH" 
+           FontSize="12" 
+           FontWeight="SemiBold"
+           Opacity="0.9" 
+           Margin="0,0,0,10"/>
+
+                    <TextBlock Text="Sort by Strength" FontSize="11" Opacity="0.7" Margin="0,0,0,5"/>
+                    <ComboBox ItemsSource="{Binding AvailableStrengthsForSort}"
+          SelectedItem="{Binding SelectedStrengthSort}"
+          DisplayMemberPath="Title"
+          Padding="8"
+          Margin="0,0,0,10"
+          Background="#2A2A32"
+          Foreground="#2A2A32"
+          BorderBrush="#3A3A44"/>
+
+                    <CheckBox Content="Sort Ascending"
+          IsChecked="{Binding SortStrengthAscending}"
+          Foreground="White"
+          Margin="0,0,0,15"
+          IsEnabled="{Binding SelectedStrengthSort.Id, Converter={StaticResource NotZeroConverter}}"/>
 
                     <!-- Clear Filters -->
                     <Button Content="Clear All Filters"
