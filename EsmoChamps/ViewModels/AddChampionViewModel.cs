@@ -337,7 +337,7 @@ namespace EsmoChamps.ViewModels
             window.ShowDialog();
         }
 
-        private void Save(Action<Champion> onSave)
+        private async void Save(Action<Champion> onSave)
         {
             if (!Validate())
             {
@@ -366,12 +366,10 @@ namespace EsmoChamps.ViewModels
                 PowerCurveEnd = PowerCurveEnd,
             };
 
-            // Add or update champion
             if (IsEditMode)
             {
                 db.Champions.Update(champ);
 
-                // Remove existing strengths
                 var existingStrengths = db.ChampionStrengths
                     .Where(cs => cs.ChampionId == ChampionId)
                     .ToList();
@@ -382,10 +380,8 @@ namespace EsmoChamps.ViewModels
                 db.Champions.Add(champ);
             }
 
-            // Save champion first to get the ID
             db.SaveChanges();
 
-            // Now add the strengths using ONLY the IDs - don't attach StrengthTitle objects!
             var selectedStrengths = AllStrengths.Where(s => s.IsSelected).ToList();
 
             foreach (var strength in selectedStrengths)
@@ -400,7 +396,7 @@ namespace EsmoChamps.ViewModels
                 db.ChampionStrengths.Add(championStrength);
             }
 
-            db.SaveChanges();
+            await db.SaveChangesAsync();
 
             onSave?.Invoke(champ);
 

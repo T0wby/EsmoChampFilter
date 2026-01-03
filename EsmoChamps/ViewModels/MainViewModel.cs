@@ -217,6 +217,8 @@ namespace EsmoChamps.ViewModels
 
             ReloadChampions();
 
+            //AllChampions = new ObservableCollection<Champion>((AllChampions ?? new ObservableCollection<Champion>()).OrderBy(c => c.Name).ToList());
+
             // Set defaults
             SelectedRoleFilter = AvailableRoles[0];
             SelectedRangeTypeFilter = AvailableRangeTypes[0];
@@ -262,13 +264,17 @@ namespace EsmoChamps.ViewModels
 
         private void ReloadChampions()
         {
+            using var db = new AppDbContext();
+
+            AllChampions?.Clear();
             AllChampions = new ObservableCollection<Champion>(
-                _context.Champions
+                db.Champions
                     .Include(c => c.Role)
                     .Include(c => c.RangeType)
                     .Include(c => c.ChampType)
                     .Include(c => c.Strengths)
                     .ThenInclude(cs => cs.StrengthTitle)
+                    .OrderBy(c => c.Name)
                     .ToList()
             );
 

@@ -239,7 +239,7 @@
                                     Background="#2A2A32"
                                     CornerRadius="3"
                                     Padding="6,3"
-                                    Margin="-20,-25,0,0">
+                                    Margin="0,-25,0,0">
                                 <TextBlock x:Name="EarlyValue" 
                                            Text="0"
                                            FontSize="11"
@@ -258,7 +258,7 @@
                                     Background="#2A2A32"
                                     CornerRadius="3"
                                     Padding="6,3"
-                                    Margin="-15,-25,0,0">
+                                    Margin="0,-25,0,0">
                                 <TextBlock x:Name="MidValue" 
                                            Text="0"
                                            FontSize="11"
@@ -277,7 +277,7 @@
                                     Background="#2A2A32"
                                     CornerRadius="3"
                                     Padding="6,3"
-                                    Margin="-20,-25,0,0">
+                                    Margin="-15,-25,0,0">
                                 <TextBlock x:Name="LateValue" 
                                            Text="0"
                                            FontSize="11"
