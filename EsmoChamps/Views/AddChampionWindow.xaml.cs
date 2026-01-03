@@ -1,4 +1,5 @@
 ﻿using EsmoChamps.Models;
+using EsmoChamps.Utility;
 using EsmoChamps.ViewModels;
 using Microsoft.Win32;
 using System.IO;
@@ -36,7 +37,7 @@ namespace EsmoChamps.Views
             {
                 Title = "Select Champion Image",
                 Filter = "Image Files (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp|All Files (*.*)|*.*",
-                InitialDirectory = ImagesFolder
+                InitialDirectory = ImageManager.UserImagesFolder
             };
 
             if (openFileDialog.ShowDialog() == true)
@@ -44,26 +45,7 @@ namespace EsmoChamps.Views
                 var vm = DataContext as AddChampionViewModel;
                 if (vm != null)
                 {
-                    // Get just the filename, not the full path
                     string fileName = Path.GetFileName(openFileDialog.FileName);
-
-                    // If the file is not already in the ChampionImages folder, copy it
-                    string targetPath = Path.Combine(ImagesFolder, fileName);
-                    if (!File.Exists(targetPath) || openFileDialog.FileName != targetPath)
-                    {
-                        try
-                        {
-                            File.Copy(openFileDialog.FileName, targetPath, true);
-                            MessageBox.Show($"Image copied to: {targetPath}", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"Error copying image: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                            return;
-                        }
-                    }
-
-                    // Store just the filename
                     vm.ImagePath = fileName;
                 }
             }

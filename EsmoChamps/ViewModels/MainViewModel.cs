@@ -48,7 +48,7 @@ namespace EsmoChamps.ViewModels
         }
 
         private Champion _selectedChampion;
-        public Champion SelectedChampion
+        public Champion? SelectedChampion
         {
             get => _selectedChampion;
             set { _selectedChampion = value; OnPropertyChanged(); }
@@ -235,34 +235,19 @@ namespace EsmoChamps.ViewModels
         public ICommand DeleteCommand { get; }
         public ICommand OpenChampionDetailsCommand { get; }
         public ICommand ClearFiltersCommand { get; }
+        public ICommand OpenImagesFolderCommand { get; }
         #endregion
 
         public MainViewModel()
         {
             _context = new AppDbContext();
 
-            //Roles = new ObservableCollection<Role>(_context.Roles.ToList());
-            //RangeTypes = new ObservableCollection<RangeType>(_context.RangeTypes.ToList());
-            //ChampTypes = new ObservableCollection<ChampType>(_context.ChampTypes.ToList());
-
-            //Champions = new ObservableCollection<Champion>(
-            //    _context.Champions
-            //      .Include(c => c.Role)
-            //      .Include(c => c.RangeType)
-            //      .Include(c => c.ChampType)
-            //      .AsNoTracking()
-            //      .OrderBy(c => c.Name)
-            //      .ToList()
-            //);
-
-            //ChampionsView = CollectionViewSource.GetDefaultView(Champions);
-            //ChampionsView.Filter = FilterChampions;
-
             OpenAddChampionCommand = new RelayCommand(_ => OpenAddChampion());
             DeleteCommand = new RelayCommand(_ => DeleteChampion(), _ => SelectedChampion != null);
             EditChampionCommand = new RelayCommand(_ => EditChampion(), _ => SelectedChampion != null);
             OpenChampionDetailsCommand = new RelayCommand(_ => OpenChampionDetails(SelectedChampion),_ => SelectedChampion != null);
             ClearFiltersCommand = new RelayCommand(_ => ClearFilters());
+            OpenImagesFolderCommand = new RelayCommand(_ => OpenImagesFolder());
 
             LoadData();
         }
@@ -336,31 +321,6 @@ namespace EsmoChamps.ViewModels
             SelectedStrengthValueFilter = AvailableStrengthsForValueFilter[0];
         }
 
-        private void StrengthFilter_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(StrengthSelectionItem.IsSelected))
-            {
-                ApplyFilters();
-                ApplySorting();
-            }
-        }
-
-        private void FilterStrengthsForFilter()
-        {
-            FilteredStrengthsForFilter.Clear();
-
-            var filtered = string.IsNullOrWhiteSpace(StrengthSearchText)
-                ? AllStrengthsForFilter
-                : AllStrengthsForFilter.Where(s =>
-                    s.Title.Contains(StrengthSearchText, StringComparison.OrdinalIgnoreCase) ||
-                    s.Description.Contains(StrengthSearchText, StringComparison.OrdinalIgnoreCase));
-
-            foreach (var strength in filtered)
-            {
-                FilteredStrengthsForFilter.Add(strength);
-            }
-        }
-
         private void DeleteChampion()
         {
             if (!_confirmationService.Confirm($"Delete '{SelectedChampion.Name}'?","Confirm Delete"))
@@ -386,6 +346,7 @@ namespace EsmoChamps.ViewModels
                     .Include(c => c.ChampType)
                     .Include(c => c.Strengths)
                     .ThenInclude(cs => cs.StrengthTitle)
+                    .AsNoTracking()  // For better performance
                     .OrderBy(c => c.Name)
                     .ToList()
             );
@@ -394,6 +355,31 @@ namespace EsmoChamps.ViewModels
         }
 
         #region Filter Methods
+        private void StrengthFilter_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(StrengthSelectionItem.IsSelected))
+            {
+                ApplyFilters();
+                ApplySorting();
+            }
+        }
+
+        private void FilterStrengthsForFilter()
+        {
+            FilteredStrengthsForFilter.Clear();
+
+            var filtered = string.IsNullOrWhiteSpace(StrengthSearchText)
+                ? AllStrengthsForFilter
+                : AllStrengthsForFilter.Where(s =>
+                    s.Title.Contains(StrengthSearchText, StringComparison.OrdinalIgnoreCase) ||
+                    s.Description.Contains(StrengthSearchText, StringComparison.OrdinalIgnoreCase));
+
+            foreach (var strength in filtered)
+            {
+                FilteredStrengthsForFilter.Add(strength);
+            }
+        }
+
         private void ApplySorting()
         {
 
@@ -575,6 +561,7 @@ namespace EsmoChamps.ViewModels
             var vm = new AddChampionViewModel(champ =>
             {
                 ReloadChampions();
+                SelectedChampion = null;
             });
             var window = new AddChampionWindow(vm);
             window.Owner = Application.Current.MainWindow;
@@ -588,6 +575,7 @@ namespace EsmoChamps.ViewModels
                 updated =>
                 {
                     ReloadChampions();
+                    SelectedChampion = null;
                 });
 
             var window = new AddChampionWindow(vm);
@@ -610,6 +598,19 @@ namespace EsmoChamps.ViewModels
             catch (Exception ex)
             {
                 MessageBox.Show($"Error opening detail window: {ex.Message}\n\n{ex.StackTrace}");
+            }
+        }
+
+        private void OpenImagesFolder()
+        {
+            try
+            {
+                System.Diagnostics.Process.Start("explorer.exe", ImageManager.UserImagesFolder);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Could not open folder: {ex.Message}", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         #endregion

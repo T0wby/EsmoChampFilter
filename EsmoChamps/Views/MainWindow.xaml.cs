@@ -1,12 +1,15 @@
 ﻿using EsmoChamps.Data;
 using EsmoChamps.Models;
+using EsmoChamps.Utility;
 using EsmoChamps.ViewModels;
 using EsmoChamps.Views;
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace EsmoChamps
 {
@@ -128,6 +131,62 @@ namespace EsmoChamps
                 foreach (var grandChild in FindVisualChildren<T>(child))
                 {
                     yield return grandChild;
+                }
+            }
+        }
+
+        private void ChampionCardImage_Loaded(object sender, RoutedEventArgs e)
+        {
+            var image = sender as Image;
+            if (image == null) return;
+
+            string imageName = image.Tag as string;
+
+            if (!string.IsNullOrEmpty(imageName))
+            {
+                string imagePath = ImageManager.GetImagePath(imageName);
+
+                if (imagePath != null && File.Exists(imagePath))
+                {
+                    try
+                    {
+                        BitmapImage bitmap = new BitmapImage();
+                        bitmap.BeginInit();
+                        bitmap.UriSource = new Uri(imagePath, UriKind.Absolute);
+                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmap.DecodePixelWidth = 50; // Optimize for card size
+                        bitmap.EndInit();
+                        bitmap.Freeze();
+
+                        image.Source = bitmap;
+
+                        // Hide the fallback letter
+                        var parent = VisualTreeHelper.GetParent(image) as Grid;
+                        if (parent != null)
+                        {
+                            var letter = parent.Children.OfType<TextBlock>().FirstOrDefault();
+                            if (letter != null)
+                            {
+                                letter.Visibility = Visibility.Collapsed;
+                            }
+                        }
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Failed to load card image: {ex.Message}");
+                    }
+                }
+            }
+
+            // Show fallback letter if image loading failed
+            var parentGrid = VisualTreeHelper.GetParent(image) as Grid;
+            if (parentGrid != null)
+            {
+                var letter = parentGrid.Children.OfType<TextBlock>().FirstOrDefault();
+                if (letter != null)
+                {
+                    letter.Visibility = Visibility.Visible;
                 }
             }
         }

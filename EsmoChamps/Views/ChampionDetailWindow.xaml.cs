@@ -1,4 +1,5 @@
-﻿using EsmoChamps.ViewModels;
+﻿using EsmoChamps.Utility;
+using EsmoChamps.ViewModels;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -230,35 +231,34 @@ namespace EsmoChamps.Views
             ChampionDetailViewModel? vm = this.DataContext as ChampionDetailViewModel;
             if (vm == null) return;
 
-            string championName = vm.Name;
-            string[] supportedExtensions = { ".png", ".jpg", ".jpeg", ".bmp" };
+            string imagePath = ImageManager.GetImagePath(vm.ImagePath);
 
-            foreach (string ext in supportedExtensions)
+            if (!string.IsNullOrEmpty(imagePath) && File.Exists(imagePath))
             {
-                string imagePath = System.IO.Path.Combine(ImagesFolder, championName + ext);
-
-                if (File.Exists(imagePath))
+                try
                 {
-                    try
-                    {
-                        BitmapImage bitmap = new BitmapImage();
-                        bitmap.BeginInit();
-                        bitmap.UriSource = new Uri(imagePath, UriKind.Absolute);
-                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                        bitmap.EndInit();
-                        bitmap.Freeze();
+                    BitmapImage bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.UriSource = new Uri(imagePath, UriKind.Absolute);
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.EndInit();
+                    bitmap.Freeze();
 
-                        ChampionImage.Source = bitmap;
-                        return;
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Failed to load image: {ex.Message}");
-                    }
+                    ChampionImage.Source = bitmap;
+                    System.Diagnostics.Debug.WriteLine($"Successfully loaded image for {vm.Name}");
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Failed to load image: {ex.Message}");
                 }
             }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine($"Image file not found: {imagePath}");
+            }
 
-            DrawDefaultIcon(championName);
+            DrawDefaultIcon(vm.Name);
         }
 
         private void DrawDefaultIcon(string name)

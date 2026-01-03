@@ -9,13 +9,19 @@
         Width="1400"
         WindowState="Maximized"
         WindowStartupLocation="CenterScreen">
-
     <Window.Resources>
         <converter:FirstLetterConverter x:Key="FirstLetterConverter"/>
         <converter:RangeToGridLengthConverter x:Key="RangeToGridLengthConverter"/>
         <converter:IsSelectedConverter x:Key="IsSelectedConverter"/>
         <converter:NotZeroConverter x:Key="NotZeroConverter"/>
     </Window.Resources>
+    <Window.InputBindings>
+        <KeyBinding Key="E" Command="{Binding EditChampionCommand}"/>
+        <KeyBinding Key="Delete" Command="{Binding DeleteCommand}"/>
+        <KeyBinding Key="Enter" Command="{Binding OpenChampionDetailsCommand}"/>
+        <KeyBinding Key="N" Modifiers="Ctrl" Command="{Binding OpenAddChampionCommand}"/>
+        <KeyBinding Key="F" Modifiers="Ctrl" Command="{Binding ClearFiltersCommand}"/>
+    </Window.InputBindings>
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -353,6 +359,15 @@
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="📁 Open Images Folder"
+                                Command="{Binding OpenImagesFolderCommand}"
+                                Padding="15,8"
+                                Background="#3A3A44"
+                                Foreground="White"
+                                BorderThickness="0"
+                                Cursor="Hand"
+                                Margin="0,0,10,0"
+                                ToolTip="Open the folder where champion images are stored"/>
                         <Button Content="+ Add Champion"
                                 Command="{Binding OpenAddChampionCommand}"
                                 Padding="15,8"
@@ -369,13 +384,15 @@
                                 Foreground="#3A3A44"
                                 BorderThickness="0"
                                 Cursor="Hand"
-                                Margin="0,0,10,0"/>
+                                Margin="0,0,10,0"
+                                ToolTip="Edit selected champion (E)"/>
                         <Button Content="🗑 Delete"
                                 Command="{Binding DeleteCommand}"
                                 Padding="15,8"
                                 Background="#D32F2F"
                                 Foreground="#3A3A44"
                                 BorderThickness="0"
+                                ToolTip="Delete selected champion (Delete)"
                                 Cursor="Hand"/>
                     </StackPanel>
                 </Grid>
@@ -424,16 +441,27 @@
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <!-- Champion Image Placeholder -->
                                         <Border Width="50" Height="50"
                                                 Background="#9B8CFF"
                                                 CornerRadius="8"
-                                                Margin="0,0,15,0">
-                                            <TextBlock Text="{Binding Name, Converter={StaticResource FirstLetterConverter}}"
-                                                       FontSize="24"
-                                                       FontWeight="Bold"
-                                                       HorizontalAlignment="Center"
-                                                       VerticalAlignment="Center"/>
+                                                Margin="0,0,15,0"
+                                                ClipToBounds="True">
+                                            <Grid>
+                                                <!-- Actual Image -->
+                                                <Image x:Name="ChampionCardImage"
+                                                       Stretch="UniformToFill"
+                                                       Loaded="ChampionCardImage_Loaded"
+                                                       Tag="{Binding ImagePath}"/>
+
+                                                <!-- Fallback Letter (shown if no image) -->
+                                                <TextBlock x:Name="ChampionCardLetter"
+                                                           Text="{Binding Name, Converter={StaticResource FirstLetterConverter}}"
+                                                           FontSize="24"
+                                                           FontWeight="Bold"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"
+                                                           Visibility="Collapsed"/>
+                                            </Grid>
                                         </Border>
 
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">

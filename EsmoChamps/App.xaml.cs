@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using EsmoChamps.Utility;
+using System.Configuration;
 using System.Data;
 using System.Windows;
 
@@ -12,6 +13,8 @@ namespace EsmoChamps
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            ImageManager.InitializeImageFolder();
 
             this.DispatcherUnhandledException += App_DispatcherUnhandledException;
         }
