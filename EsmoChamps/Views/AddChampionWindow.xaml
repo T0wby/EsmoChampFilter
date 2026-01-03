@@ -79,7 +79,7 @@
             <Separator Margin="0 10"/>
             <TextBlock Text="Power Curve" FontSize="15" FontWeight="Black"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                <TextBlock Text="Start"/>
+                <TextBlock Text="Early"/>
                 <TextBlock Text=" - " VerticalAlignment="Center"/>
                 <TextBox Width="50" Text="{Binding PowerCurveStart, 
                 UpdateSourceTrigger=PropertyChanged, 
@@ -93,7 +93,7 @@
                 ValidatesOnNotifyDataErrors=True}"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                <TextBlock Text="End"/>
+                <TextBlock Text="Late"/>
                 <TextBlock Text=" - " VerticalAlignment="Center"/>
                 <TextBox Width="50" Text="{Binding PowerCurveEnd, 
                 UpdateSourceTrigger=PropertyChanged, 
@@ -167,7 +167,7 @@
                                                 IsEnabled="{Binding IsSelected}">
                                                     <TextBlock Text="{Binding Value, StringFormat='Power: {0}'}" 
                                                    FontSize="10" Foreground="#1E1E24" HorizontalAlignment="Center" Margin="0,0,0,5"/>
-                                                    <Slider Minimum="0" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="True"
+                                                    <Slider Minimum="0" Maximum="100" TickFrequency="1" IsSnapToTickEnabled="True"
                                                 Value="{Binding Value, UpdateSourceTrigger=PropertyChanged}"/>
                                                 </StackPanel>
                                             </Grid>

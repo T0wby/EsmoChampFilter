@@ -303,7 +303,8 @@
             </Border>
 
             <!-- Champion Cards -->
-            <ScrollViewer Grid.Row="1" 
+            <ScrollViewer Grid.Row="1"
+                          x:Name="ChampionScrollViewer"
                           VerticalScrollBarVisibility="Auto"
                           Padding="20">
                 <ItemsControl ItemsSource="{Binding FilteredChampions}">
@@ -321,28 +322,13 @@
                                     Cursor="Hand"
                                     BorderBrush="#2A2A32"
                                     BorderThickness="1"
-                                    MouseLeftButtonUp="Card_MouseLeftButtonDown"
+                                    MouseLeftButtonDown="Card_MouseLeftButtonDown"
                                     Tag="{Binding}">
                                 <Border.Style>
                                     <Style TargetType="Border">
                                         <Setter Property="BorderThickness" Value="1"/>
-                                        <Style.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="#1E1E28"/>
-                                                <Setter Property="BorderBrush" Value="#9B8CFF"/>
-                                            </Trigger>
-                                            <DataTrigger Value="True">
-                                                <DataTrigger.Binding>
-                                                    <MultiBinding Converter="{StaticResource IsSelectedConverter}">
-                                                        <Binding Path="."/>
-                                                        <Binding Path="DataContext.SelectedChampion" 
-                                     RelativeSource="{RelativeSource AncestorType=Window}"/>
-                                                    </MultiBinding>
-                                                </DataTrigger.Binding>
-                                                <Setter Property="BorderBrush" Value="#9B8CFF"/>
-                                                <Setter Property="BorderThickness" Value="2"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
+                                        <Setter Property="BorderBrush" Value="#2A2A32"/>
+                                        <Setter Property="Background" Value="#16161C"/>
                                     </Style>
                                 </Border.Style>
 

@@ -75,13 +75,13 @@ namespace EsmoChamps.Views
             if (width <= 0) return;
 
             // Calculate positions (invert Y because canvas Y increases downward)
-            double x1 = 0;
+            double x1 = 5;
             double y1 = height - (earlyPower / 100.0 * height);
 
             double x2 = width / 2;
             double y2 = height - (midPower / 100.0 * height);
 
-            double x3 = width;
+            double x3 = width - 5;
             double y3 = height - (latePower / 100.0 * height);
 
             // Create smooth Bezier curve
@@ -134,7 +134,7 @@ namespace EsmoChamps.Views
             Canvas.SetLeft(MidPointGroup, x2 - 5);
             Canvas.SetTop(MidPointGroup, y2 - 5);
 
-            Canvas.SetLeft(LatePointGroup, x3 - 25);
+            Canvas.SetLeft(LatePointGroup, x3 - 5);
             Canvas.SetTop(LatePointGroup, y3 - 5);
 
             // Set initial label opacity

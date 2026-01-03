@@ -402,7 +402,6 @@ namespace EsmoChamps.ViewModels
 
             db.SaveChanges();
 
-            // Call the callback for UI refresh - but don't save again!
             onSave?.Invoke(champ);
 
             RequestClose?.Invoke();

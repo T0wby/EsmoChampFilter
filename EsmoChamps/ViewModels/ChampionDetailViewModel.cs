@@ -1,9 +1,17 @@
 ﻿using EsmoChamps.Commands;
 using EsmoChamps.Models;
+using System.Collections.ObjectModel;
 using System.Windows.Input;
 
 namespace EsmoChamps.ViewModels
 {
+    public class StrengthDisplayItem
+    {
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public int Value { get; set; }
+    }
+
     public class ChampionDetailViewModel : BaseViewModel
     {
         #region Properties
@@ -25,6 +33,8 @@ namespace EsmoChamps.ViewModels
         public int PowerStart => Champion.PowerCurveStart;
         public int PowerMid => Champion.PowerCurveMid;
         public int PowerEnd => Champion.PowerCurveEnd;
+
+        public ObservableCollection<StrengthDisplayItem> Strengths { get; }
         #endregion
         public event Action? RequestClose;
 
@@ -37,6 +47,17 @@ namespace EsmoChamps.ViewModels
         {
             Champion = champion;
             CloseCommand = new RelayCommand(_ => RequestClose?.Invoke());
+
+            Strengths = new ObservableCollection<StrengthDisplayItem>(
+                Champion.Strengths
+                    .OrderByDescending(s => s.Value)
+                    .Select(cs => new StrengthDisplayItem
+                    {
+                        Title = cs.StrengthTitle.Title,
+                        Description = cs.StrengthTitle.Description,
+                        Value = cs.Value
+                    })
+            );
         }
     }
 }
