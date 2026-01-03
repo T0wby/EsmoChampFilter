@@ -1,0 +1,588 @@
+﻿<Window x:Class="EsmoChamps.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converter="clr-namespace:EsmoChamps.Converters"
+        Background="#1E1E24"
+        Foreground="White"
+        Title="Champion Viewer" 
+        Height="700" 
+        Width="1400"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <converter:FirstLetterConverter x:Key="FirstLetterConverter"/>
+        <converter:RangeToGridLengthConverter x:Key="RangeToGridLengthConverter"/>
+        <converter:IsSelectedConverter x:Key="IsSelectedConverter"/>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- LEFT SIDEBAR - Filters -->
+        <Border Grid.Column="0" 
+                Background="#16161C" 
+                Padding="15"
+                BorderBrush="#2A2A32" 
+                BorderThickness="0,0,1,0">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="0,0,10,0">
+                    <!-- Header -->
+                    <TextBlock Text="FILTERS" 
+                               FontSize="16" 
+                               FontWeight="Bold" 
+                               Margin="0,0,0,20"
+                               Foreground="#9B8CFF"/>
+
+                    <!-- Search -->
+                    <TextBlock Text="Search" FontSize="12" Opacity="0.7" Margin="0,0,0,5"/>
+                    <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                             Padding="8"
+                             Margin="0,0,0,15"
+                             Background="#2A2A32"
+                             Foreground="White"
+                             BorderBrush="#3A3A44"
+                             BorderThickness="1">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox">
+                                <Setter Property="Foreground" Value="White"/>
+                                <Style.Triggers>
+                                    <Trigger Property="Text" Value="">
+                                        <Setter Property="Background">
+                                            <Setter.Value>
+                                                <VisualBrush Stretch="None" AlignmentX="Left">
+                                                    <VisualBrush.Visual>
+                                                        <TextBlock Text="Search by name..." 
+                                                                   Foreground="#666" 
+                                                                   Margin="8,0,0,0"/>
+                                                    </VisualBrush.Visual>
+                                                </VisualBrush>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+
+                    <!-- Role Filter -->
+                    <TextBlock Text="Role" FontSize="12" Opacity="0.7" Margin="0,0,0,5"/>
+                    <ComboBox ItemsSource="{Binding AvailableRoles}"
+                              SelectedItem="{Binding SelectedRoleFilter}"
+                              DisplayMemberPath="Name"
+                              Padding="8"
+                              Margin="0,0,0,15"
+                              Background="#2A2A32"
+                              Foreground="#2A2A32"
+                              BorderBrush="#3A3A44"/>
+
+                    <!-- Range Type Filter -->
+                    <TextBlock Text="Range Type" FontSize="12" Opacity="0.7" Margin="0,0,0,5"/>
+                    <ComboBox ItemsSource="{Binding AvailableRangeTypes}"
+                              SelectedItem="{Binding SelectedRangeTypeFilter}"
+                              DisplayMemberPath="Name"
+                              Padding="8"
+                              Margin="0,0,0,15"
+                              Background="#2A2A32"
+                              Foreground="#2A2A32"
+                              BorderBrush="#3A3A44"/>
+
+                    <!-- Champion Type Filter -->
+                    <TextBlock Text="Champion Type" FontSize="12" Opacity="0.7" Margin="0,0,0,5"/>
+                    <ComboBox ItemsSource="{Binding AvailableChampTypes}"
+                              SelectedItem="{Binding SelectedChampTypeFilter}"
+                              DisplayMemberPath="Name"
+                              Padding="8"
+                              Margin="0,0,0,15"
+                              Background="#2A2A32"
+                              Foreground="#2A2A32"
+                              BorderBrush="#3A3A44"/>
+
+                    <Separator Background="#3A3A44" Margin="0,10,0,15"/>
+
+                    <!-- Difficulty Ranges -->
+                    <TextBlock Text="DIFFICULTY RANGE" 
+                               FontSize="12" 
+                               FontWeight="SemiBold"
+                               Opacity="0.9" 
+                               Margin="0,0,0,10"/>
+
+                    <TextBlock Text="Mechanics" FontSize="11" Opacity="0.7" Margin="0,5,0,5"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0" 
+                                 Text="{Binding MechanicsMinFilter, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="#2A2A32"
+                                 Foreground="White"
+                                 Padding="5"
+                                 BorderBrush="#3A3A44"/>
+                        <TextBlock Grid.Column="1" Text=" - " VerticalAlignment="Center" Margin="5,0"/>
+                        <TextBox Grid.Column="2" 
+                                 Text="{Binding MechanicsMaxFilter, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="#2A2A32"
+                                 Foreground="White"
+                                 Padding="5"
+                                 BorderBrush="#3A3A44"/>
+                    </Grid>
+
+                    <TextBlock Text="Macro" FontSize="11" Opacity="0.7" Margin="0,10,0,5"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0" 
+                                 Text="{Binding MacroMinFilter, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="#2A2A32"
+                                 Foreground="White"
+                                 Padding="5"
+                                 BorderBrush="#3A3A44"/>
+                        <TextBlock Grid.Column="1" Text=" - " VerticalAlignment="Center" Margin="5,0"/>
+                        <TextBox Grid.Column="2" 
+                                 Text="{Binding MacroMaxFilter, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="#2A2A32"
+                                 Foreground="White"
+                                 Padding="5"
+                                 BorderBrush="#3A3A44"/>
+                    </Grid>
+
+                    <TextBlock Text="Tactical" FontSize="11" Opacity="0.7" Margin="0,10,0,5"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0" 
+                                 Text="{Binding TacticalMinFilter, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="#2A2A32"
+                                 Foreground="White"
+                                 Padding="5"
+                                 BorderBrush="#3A3A44"/>
+                        <TextBlock Grid.Column="1" Text=" - " VerticalAlignment="Center" Margin="5,0"/>
+                        <TextBox Grid.Column="2" 
+                                 Text="{Binding TacticalMaxFilter, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="#2A2A32"
+                                 Foreground="White"
+                                 Padding="5"
+                                 BorderBrush="#3A3A44"/>
+                    </Grid>
+
+                    <Separator Background="#3A3A44" Margin="0,15"/>
+
+                    <!-- Strengths Filter -->
+                    <TextBlock Text="STRENGTHS" 
+                               FontSize="12" 
+                               FontWeight="SemiBold"
+                               Opacity="0.9" 
+                               Margin="0,0,0,10"/>
+
+                    <TextBox Text="{Binding StrengthSearchText, UpdateSourceTrigger=PropertyChanged}"
+                             Padding="8"
+                             Margin="0,0,0,10"
+                             Background="#2A2A32"
+                             Foreground="White"
+                             BorderBrush="#3A3A44">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox">
+                                <Setter Property="Foreground" Value="White"/>
+                                <Style.Triggers>
+                                    <Trigger Property="Text" Value="">
+                                        <Setter Property="Background">
+                                            <Setter.Value>
+                                                <VisualBrush Stretch="None" AlignmentX="Left">
+                                                    <VisualBrush.Visual>
+                                                        <TextBlock Text="Search strengths..." 
+                                                                   Foreground="#666" 
+                                                                   Margin="8,0,0,0"/>
+                                                    </VisualBrush.Visual>
+                                                </VisualBrush>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+
+                    <Border Background="#2A2A32" 
+                            CornerRadius="4" 
+                            MaxHeight="300"
+                            BorderBrush="#3A3A44"
+                            BorderThickness="1">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding FilteredStrengthsForFilter}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <CheckBox Content="{Binding Title}"
+                                                  IsChecked="{Binding IsSelected}"
+                                                  Margin="8,5"
+                                                  ToolTip="{Binding Description}"
+                                                  Foreground="White"
+                                                  FontSize="11"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Border>
+
+                    <!-- Clear Filters -->
+                    <Button Content="Clear All Filters"
+                            Command="{Binding ClearFiltersCommand}"
+                            Margin="0,15,0,0"
+                            Padding="10"
+                            Background="#3A3A44"
+                            Foreground="White"
+                            BorderThickness="0"
+                            Cursor="Hand"/>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- RIGHT - Main Content -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Top Bar -->
+            <Border Grid.Row="0" 
+                    Background="#16161C" 
+                    Padding="20,15"
+                    BorderBrush="#2A2A32"
+                    BorderThickness="0,0,0,1">
+                <Grid>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="CHAMPIONS" 
+                                   FontSize="18" 
+                                   FontWeight="Bold"
+                                   VerticalAlignment="Center"
+                                   Foreground="#9B8CFF"/>
+                        <TextBlock Text="{Binding FilteredChampionCount, StringFormat=' ({0})'}"
+                                   FontSize="14"
+                                   VerticalAlignment="Center"
+                                   Margin="5,0,0,0"
+                                   Opacity="0.6"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="+ Add Champion"
+                                Command="{Binding OpenAddChampionCommand}"
+                                Padding="15,8"
+                                Background="#9B8CFF"
+                                Foreground="#3A3A44"
+                                BorderThickness="0"
+                                FontWeight="SemiBold"
+                                Cursor="Hand"
+                                Margin="0,0,10,0"/>
+                        <Button Content="✎ Edit"
+                                Command="{Binding EditChampionCommand}"
+                                Padding="15,8"
+                                Background="Green"
+                                Foreground="#3A3A44"
+                                BorderThickness="0"
+                                Cursor="Hand"
+                                Margin="0,0,10,0"/>
+                        <Button Content="🗑 Delete"
+                                Command="{Binding DeleteCommand}"
+                                Padding="15,8"
+                                Background="#D32F2F"
+                                Foreground="#3A3A44"
+                                BorderThickness="0"
+                                Cursor="Hand"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Champion Cards -->
+            <ScrollViewer Grid.Row="1" 
+                          VerticalScrollBarVisibility="Auto"
+                          Padding="20">
+                <ItemsControl ItemsSource="{Binding FilteredChampions}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="#16161C"
+                                    CornerRadius="8"
+                                    Margin="0,0,15,15"
+                                    Width="320"
+                                    Cursor="Hand"
+                                    BorderBrush="#2A2A32"
+                                    BorderThickness="1"
+                                    MouseLeftButtonUp="Card_MouseLeftButtonDown"
+                                    Tag="{Binding}">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#1E1E28"/>
+                                                <Setter Property="BorderBrush" Value="#9B8CFF"/>
+                                            </Trigger>
+                                            <DataTrigger Value="True">
+                                                <DataTrigger.Binding>
+                                                    <MultiBinding Converter="{StaticResource IsSelectedConverter}">
+                                                        <Binding Path="."/>
+                                                        <Binding Path="DataContext.SelectedChampion" 
+                                     RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                                    </MultiBinding>
+                                                </DataTrigger.Binding>
+                                                <Setter Property="BorderBrush" Value="#9B8CFF"/>
+                                                <Setter Property="BorderThickness" Value="2"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Card Header -->
+                                    <Grid Grid.Row="0" Margin="15,15,15,10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Champion Image Placeholder -->
+                                        <Border Width="50" Height="50"
+                                                Background="#9B8CFF"
+                                                CornerRadius="8"
+                                                Margin="0,0,15,0">
+                                            <TextBlock Text="{Binding Name, Converter={StaticResource FirstLetterConverter}}"
+                                                       FontSize="24"
+                                                       FontWeight="Bold"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"/>
+                                        </Border>
+
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Name}"
+                                                       FontSize="16"
+                                                       FontWeight="Bold"/>
+                                            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                                <Border Background="#3A3A44" 
+                                                        CornerRadius="3" 
+                                                        Padding="6,2"
+                                                        Margin="0,0,5,0">
+                                                    <TextBlock Text="{Binding Role.Name}" FontSize="10"/>
+                                                </Border>
+                                                <Border Background="#3A3A44" 
+                                                        CornerRadius="3" 
+                                                        Padding="6,2"
+                                                        Margin="0,0,5,0">
+                                                    <TextBlock Text="{Binding RangeType.Name}" FontSize="10"/>
+                                                </Border>
+                                                <Border Background="#3A3A44" 
+                                                        CornerRadius="3" 
+                                                        Padding="6,2">
+                                                    <TextBlock Text="{Binding ChampType.Name}" FontSize="10"/>
+                                                </Border>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <!-- Card Body -->
+                                    <StackPanel Grid.Row="1" Margin="15,0,15,15">
+                                        <Separator Background="#2A2A32" Margin="0,0,0,10"/>
+
+                                        <!-- Difficulty -->
+                                        <TextBlock Text="Difficulty" 
+                                                   FontSize="11" 
+                                                   Opacity="0.7" 
+                                                   Margin="0,0,0,5"/>
+                                        <Grid Margin="0,0,0,10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+
+                                            <TextBlock Grid.Row="0" Grid.Column="0" 
+                                                       Text="Mecha:" FontSize="10" 
+                                                       Margin="0,0,5,3" Opacity="0.7"/>
+                                            <Grid Grid.Row="0" Grid.Column="1" Height="8" Margin="0,0,0,3" Background="#2A2A32">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition>
+                                                        <ColumnDefinition.Width>
+                                                            <MultiBinding Converter="{StaticResource RangeToGridLengthConverter}" ConverterParameter="Pre">
+                                                                <Binding Path="MechanicsMin"/>
+                                                                <Binding Path="MechanicsMax"/>
+                                                            </MultiBinding>
+                                                        </ColumnDefinition.Width>
+                                                    </ColumnDefinition>
+
+                                                    <ColumnDefinition>
+                                                        <ColumnDefinition.Width>
+                                                            <MultiBinding Converter="{StaticResource RangeToGridLengthConverter}" ConverterParameter="Fill">
+                                                                <Binding Path="MechanicsMin"/>
+                                                                <Binding Path="MechanicsMax"/>
+                                                            </MultiBinding>
+                                                        </ColumnDefinition.Width>
+                                                    </ColumnDefinition>
+
+                                                    <ColumnDefinition>
+                                                        <ColumnDefinition.Width>
+                                                            <MultiBinding Converter="{StaticResource RangeToGridLengthConverter}" ConverterParameter="Post">
+                                                                <Binding Path="MechanicsMin"/>
+                                                                <Binding Path="MechanicsMax"/>
+                                                            </MultiBinding>
+                                                        </ColumnDefinition.Width>
+                                                    </ColumnDefinition>
+                                                </Grid.ColumnDefinitions>
+
+                                                <Border Grid.Column="1" Background="#D4A574"/>
+                                            </Grid>
+
+                                            <TextBlock Grid.Row="1" Grid.Column="0" 
+                                                       Text="Macro:" FontSize="10" 
+                                                       Margin="0,0,5,3" Opacity="0.7"/>
+
+                                            <Grid Grid.Row="1" Grid.Column="1" Height="8" Margin="0,0,0,3" Background="#2A2A32">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition>
+                                                        <ColumnDefinition.Width>
+                                                            <MultiBinding Converter="{StaticResource RangeToGridLengthConverter}" ConverterParameter="Pre">
+                                                                <Binding Path="MacroMin"/>
+                                                                <Binding Path="MacroMax"/>
+                                                            </MultiBinding>
+                                                        </ColumnDefinition.Width>
+                                                    </ColumnDefinition>
+
+                                                    <ColumnDefinition>
+                                                        <ColumnDefinition.Width>
+                                                            <MultiBinding Converter="{StaticResource RangeToGridLengthConverter}" ConverterParameter="Fill">
+                                                                <Binding Path="MacroMin"/>
+                                                                <Binding Path="MacroMax"/>
+                                                            </MultiBinding>
+                                                        </ColumnDefinition.Width>
+                                                    </ColumnDefinition>
+
+                                                    <ColumnDefinition>
+                                                        <ColumnDefinition.Width>
+                                                            <MultiBinding Converter="{StaticResource RangeToGridLengthConverter}" ConverterParameter="Post">
+                                                                <Binding Path="MacroMin"/>
+                                                                <Binding Path="MacroMax"/>
+                                                            </MultiBinding>
+                                                        </ColumnDefinition.Width>
+                                                    </ColumnDefinition>
+                                                </Grid.ColumnDefinitions>
+
+                                                <Border Grid.Column="1" Background="#D4A574"/>
+                                            </Grid>
+
+                                            <TextBlock Grid.Row="2" Grid.Column="0" 
+                                                       Text="Tacti:" FontSize="10" 
+                                                       Margin="0,0,5,0" Opacity="0.7"/>
+                                            <Grid Grid.Row="2" Grid.Column="1" Height="8" Margin="0,0,0,3" Background="#2A2A32">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition>
+                                                        <ColumnDefinition.Width>
+                                                            <MultiBinding Converter="{StaticResource RangeToGridLengthConverter}" ConverterParameter="Pre">
+                                                                <Binding Path="TacticalMin"/>
+                                                                <Binding Path="TacticalMax"/>
+                                                            </MultiBinding>
+                                                        </ColumnDefinition.Width>
+                                                    </ColumnDefinition>
+
+                                                    <ColumnDefinition>
+                                                        <ColumnDefinition.Width>
+                                                            <MultiBinding Converter="{StaticResource RangeToGridLengthConverter}" ConverterParameter="Fill">
+                                                                <Binding Path="TacticalMin"/>
+                                                                <Binding Path="TacticalMax"/>
+                                                            </MultiBinding>
+                                                        </ColumnDefinition.Width>
+                                                    </ColumnDefinition>
+
+                                                    <ColumnDefinition>
+                                                        <ColumnDefinition.Width>
+                                                            <MultiBinding Converter="{StaticResource RangeToGridLengthConverter}" ConverterParameter="Post">
+                                                                <Binding Path="TacticalMin"/>
+                                                                <Binding Path="TacticalMax"/>
+                                                            </MultiBinding>
+                                                        </ColumnDefinition.Width>
+                                                    </ColumnDefinition>
+                                                </Grid.ColumnDefinitions>
+
+                                                <Border Grid.Column="1" Background="#D4A574"/>
+                                            </Grid>
+                                        </Grid>
+
+                                        <!-- Power Curve Mini -->
+                                        <TextBlock Text="Power Curve" 
+                                                   FontSize="11" 
+                                                   Opacity="0.7" 
+                                                   Margin="0,5,0,5"/>
+                                        <Grid Height="40">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Grid.Column="0" Background="#2A2A32" Margin="0,0,2,0">
+                                                <TextBlock Text="{Binding PowerCurveStart}" 
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"
+                                                           FontSize="14"
+                                                           FontWeight="Bold"/>
+                                            </Border>
+                                            <Border Grid.Column="1" Background="#2A2A32" Margin="2,0">
+                                                <TextBlock Text="{Binding PowerCurveMid}" 
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"
+                                                           FontSize="14"
+                                                           FontWeight="Bold"/>
+                                            </Border>
+                                            <Border Grid.Column="2" Background="#2A2A32" Margin="2,0,0,0">
+                                                <TextBlock Text="{Binding PowerCurveEnd}" 
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"
+                                                           FontSize="14"
+                                                           FontWeight="Bold"/>
+                                            </Border>
+                                        </Grid>
+                                        <Grid Margin="0,2,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="Early" 
+                                                       HorizontalAlignment="Center" 
+                                                       FontSize="9" Opacity="0.5"/>
+                                            <TextBlock Grid.Column="1" Text="Mid" 
+                                                       HorizontalAlignment="Center" 
+                                                       FontSize="9" Opacity="0.5"/>
+                                            <TextBlock Grid.Column="2" Text="Late" 
+                                                       HorizontalAlignment="Center" 
+                                                       FontSize="9" Opacity="0.5"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</Window>

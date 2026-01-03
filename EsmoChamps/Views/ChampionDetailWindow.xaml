@@ -1,0 +1,262 @@
+﻿<Window x:Class="EsmoChamps.Views.ChampionDetailWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Champion Details"
+        Height="500"
+        Width="900"
+        Background="#1E1E24"
+        Foreground="White">
+    <Grid Margin="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="3*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- LEFT: Overview -->
+        <StackPanel Grid.Column="0" Margin="0,0,20,0">
+            <!-- Champion Name and Image -->
+            <Grid Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Champion Image -->
+                <Border Grid.Column="0"
+                        Width="60"
+                        Height="60"
+                        CornerRadius="8"
+                        Background="#2A2A32"
+                        Margin="0,0,15,0">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="10" 
+                                        ShadowDepth="2" 
+                                        Opacity="0.5"
+                                        Color="#9B8CFF"/>
+                    </Border.Effect>
+                    <Image x:Name="ChampionImage"
+                           Stretch="UniformToFill">
+                        <Image.Clip>
+                            <RectangleGeometry Rect="0,0,60,60" RadiusX="8" RadiusY="8"/>
+                        </Image.Clip>
+                    </Image>
+                </Border>
+
+                <!-- Champion Name -->
+                <TextBlock Grid.Column="1"
+                           Text="{Binding Name, Mode=OneWay}"
+                           FontSize="26"
+                           FontWeight="Bold"
+                           VerticalAlignment="Center"/>
+            </Grid>
+            <TextBlock Text="{Binding Role, Mode=OneWay}" FontSize="14"/>
+            <TextBlock Text="{Binding Range, Mode=OneWay}" FontSize="14"/>
+            <TextBlock Text="{Binding Type, Mode=OneWay}" FontSize="14"/>
+            <Separator Margin="0,15" Background="#3A3A44"/>
+
+            <TextBlock Text="Difficulty"
+                       FontSize="18"
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,10"/>
+
+            <!-- Difficulty bars with ranges -->
+            <!-- Mechanics -->
+            <Grid Margin="0,0,0,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Mechanics" Opacity="0.7" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" 
+                           Opacity="0.7" 
+                           VerticalAlignment="Center">
+                    <Run Text="{Binding MechanicsMin, Mode=OneWay}"/>
+                    <Run Text="-"/>
+                    <Run Text="{Binding MechanicsMax, Mode=OneWay}"/>
+                </TextBlock>
+            </Grid>
+            <Grid Height="12" Margin="0,0,0,12" x:Name="MechanicsBarContainer">
+                <Border Background="#2A2A32" CornerRadius="2"/>
+                <Border x:Name="MechanicsBar"
+                        Background="#D4A574"
+                        CornerRadius="2"
+                        HorizontalAlignment="Left"/>
+            </Grid>
+
+            <!-- Macro -->
+            <Grid Margin="0,0,0,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Macro" Opacity="0.7" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" 
+                           Opacity="0.7" 
+                           VerticalAlignment="Center">
+                    <Run Text="{Binding MacroMin, Mode=OneWay}"/>
+                    <Run Text="-"/>
+                    <Run Text="{Binding MacroMax, Mode=OneWay}"/>
+                </TextBlock>
+            </Grid>
+            <Grid Height="12" Margin="0,0,0,12">
+                <Border Background="#2A2A32" CornerRadius="2"/>
+                <Border x:Name="MacroBar"
+                        Background="#D4A574"
+                        CornerRadius="2"
+                        HorizontalAlignment="Left"/>
+            </Grid>
+
+            <!-- Tactical -->
+            <Grid Margin="0,0,0,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Tactical" Opacity="0.7" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" 
+                           Opacity="0.7" 
+                           VerticalAlignment="Center">
+                    <Run Text="{Binding TacticalMin, Mode=OneWay}"/>
+                    <Run Text="-"/>
+                    <Run Text="{Binding TacticalMax, Mode=OneWay}"/>
+                </TextBlock>
+            </Grid>
+            <Grid Height="12" Margin="0,0,0,12">
+                <Border Background="#2A2A32" CornerRadius="2"/>
+                <Border x:Name="TacticalBar"
+                        Background="#D4A574"
+                        CornerRadius="2"
+                        HorizontalAlignment="Left"/>
+            </Grid>
+        </StackPanel>
+
+        <!-- RIGHT: Power Curve -->
+        <StackPanel Grid.Column="1">
+            <TextBlock Text="Power Curve"
+                       FontSize="18"
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,15"/>
+
+            <!-- Power Curve Chart -->
+            <Border Background="#16161C" 
+                    CornerRadius="8"
+                    Padding="20">
+                <Grid x:Name="ChartGrid" Height="250">
+                    <Canvas x:Name="PowerCurveCanvas" 
+                            ClipToBounds="True">
+                        <!-- Grid lines -->
+                        <Line X1="0" Y1="0" X2="0" Y2="250" 
+                              Stroke="#2A2A32" StrokeThickness="1"/>
+                        <Line X1="0" Y1="250" X2="400" Y2="250" 
+                              Stroke="#2A2A32" StrokeThickness="1"/>
+
+                        <!-- Horizontal grid lines -->
+                        <Line X1="0" Y1="62.5" X2="400" Y2="62.5" 
+                              Stroke="#2A2A32" StrokeThickness="1" StrokeDashArray="2,4"/>
+                        <Line X1="0" Y1="125" X2="400" Y2="125" 
+                              Stroke="#2A2A32" StrokeThickness="1" StrokeDashArray="2,4"/>
+                        <Line X1="0" Y1="187.5" X2="400" Y2="187.5" 
+                              Stroke="#2A2A32" StrokeThickness="1" StrokeDashArray="2,4"/>
+
+                        <!-- Gradient fill under curve -->
+                        <Path x:Name="CurveFillPath" StrokeThickness="0">
+                            <Path.Fill>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Color="#509B8CFF" Offset="0"/>
+                                    <GradientStop Color="#109B8CFF" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Path.Fill>
+                        </Path>
+
+                        <!-- Power curve line -->
+                        <Path x:Name="CurveLinePath" 
+                              Stroke="#9B8CFF" 
+                              StrokeThickness="3"
+                              StrokeLineJoin="Round"
+                              StrokeStartLineCap="Round"
+                              StrokeEndLineCap="Round"/>
+
+                        <!-- Data points with values -->
+                        <!-- Early Point -->
+                        <Grid x:Name="EarlyPointGroup">
+                            <Ellipse x:Name="EarlyPoint" 
+                                     Width="10" Height="10" 
+                                     Fill="#9B8CFF"
+                                     Cursor="Hand"/>
+                            <Border x:Name="EarlyLabel"
+                                    Background="#2A2A32"
+                                    CornerRadius="3"
+                                    Padding="10,3"
+                                    Margin="0,-25,0,0">
+                                <TextBlock x:Name="EarlyValue" 
+                                           Text="0"
+                                           FontSize="11"
+                                           Foreground="White"
+                                           FontWeight="SemiBold"/>
+                            </Border>
+                        </Grid>
+
+                        <!-- Mid Point -->
+                        <Grid x:Name="MidPointGroup">
+                            <Ellipse x:Name="MidPoint" 
+                                     Width="10" Height="10" 
+                                     Fill="#9B8CFF"
+                                     Cursor="Hand"/>
+                            <Border x:Name="MidLabel"
+                                    Background="#2A2A32"
+                                    CornerRadius="3"
+                                    Padding="6,3"
+                                    Margin="0,-25,0,0">
+                                <TextBlock x:Name="MidValue" 
+                                           Text="0"
+                                           FontSize="11"
+                                           Foreground="White"
+                                           FontWeight="SemiBold"/>
+                            </Border>
+                        </Grid>
+
+                        <!-- Late Point -->
+                        <Grid x:Name="LatePointGroup">
+                            <Ellipse x:Name="LatePoint" 
+                                     Width="10" Height="10" 
+                                     Fill="#9B8CFF"
+                                     Cursor="Hand"/>
+                            <Border x:Name="LateLabel"
+                                    Background="#2A2A32"
+                                    CornerRadius="3"
+                                    Padding="6,3"
+                                    Margin="0,-25,0,0">
+                                <TextBlock x:Name="LateValue" 
+                                           Text="0"
+                                           FontSize="11"
+                                           Foreground="White"
+                                           FontWeight="SemiBold"/>
+                            </Border>
+                        </Grid>
+                    </Canvas>
+                </Grid>
+            </Border>
+
+            <!-- Labels -->
+            <Grid Margin="20,10,20,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Early" 
+                           Grid.Column="0" 
+                           HorizontalAlignment="Left"
+                           Opacity="0.7"/>
+                <TextBlock Text="Mid" 
+                           Grid.Column="1" 
+                           HorizontalAlignment="Center"
+                           Opacity="0.7"/>
+                <TextBlock Text="Late" 
+                           Grid.Column="2" 
+                           HorizontalAlignment="Right"
+                           Opacity="0.7"/>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</Window>

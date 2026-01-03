@@ -1,0 +1,208 @@
+﻿<Window x:Class="EsmoChamps.Views.AddChampionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Add Champion"
+        Height="805"
+        Width="400"
+        Background="#1E1E24"
+        Foreground="White"
+        WindowStartupLocation="CenterOwner">
+
+    <ScrollViewer>
+        <Grid>
+            <StackPanel Margin="10">
+
+            <TextBlock Text="Name"/>
+            <TextBox Text="{Binding Name, 
+                UpdateSourceTrigger=PropertyChanged, 
+                ValidatesOnNotifyDataErrors=True}"/>
+
+            <TextBlock Text="Role"/>
+            <ComboBox ItemsSource="{Binding Roles}"
+                      SelectedValuePath="Id"
+                      SelectedValue="{Binding SelectedRoleId,
+                                 UpdateSourceTrigger=PropertyChanged,
+                                 ValidatesOnNotifyDataErrors=True}" 
+                      DisplayMemberPath="Name"/>
+
+            <TextBlock Text="Range Type"/>
+            <ComboBox ItemsSource="{Binding RangeTypes}"
+                      SelectedValuePath="Id"
+                      SelectedValue="{Binding SelectedRangeTypeId,
+                                    UpdateSourceTrigger=PropertyChanged,
+                                    ValidatesOnNotifyDataErrors=True}" 
+                      DisplayMemberPath="Name"/>
+
+            <TextBlock Text="Champion Type"/>
+            <ComboBox ItemsSource="{Binding ChampTypes}"
+                      SelectedValuePath="Id"
+                      SelectedValue="{Binding SelectedChampTypeId,
+                                    UpdateSourceTrigger=PropertyChanged,
+                                    ValidatesOnNotifyDataErrors=True}" 
+                      DisplayMemberPath="Name"/>
+
+            <Separator Margin="0 10"/>
+
+            <TextBlock Text="Mechanics"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBox Width="50" Text="{Binding MechanicsMin, 
+                                            UpdateSourceTrigger=PropertyChanged, 
+                                            ValidatesOnNotifyDataErrors=True}"/>
+                <TextBlock Text=" - " VerticalAlignment="Center"/>
+                <TextBox Width="50" Text="{Binding MechanicsMax, 
+                                            UpdateSourceTrigger=PropertyChanged, 
+                                            ValidatesOnNotifyDataErrors=True}"/>
+            </StackPanel>
+
+            <TextBlock Text="Macro"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBox Width="50" Text="{Binding MacroMin, 
+                                            UpdateSourceTrigger=PropertyChanged, 
+                                            ValidatesOnNotifyDataErrors=True}"/>
+                <TextBlock Text=" - " VerticalAlignment="Center"/>
+                <TextBox Width="50" Text="{Binding MacroMax, 
+                                            UpdateSourceTrigger=PropertyChanged, 
+                                            ValidatesOnNotifyDataErrors=True}"/>
+            </StackPanel>
+
+            <TextBlock Text="Tactical"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBox Width="50" Text="{Binding TacticalMin, 
+                                            UpdateSourceTrigger=PropertyChanged, 
+                                            ValidatesOnNotifyDataErrors=True}"/>
+                <TextBlock Text=" - " VerticalAlignment="Center"/>
+                <TextBox Width="50" Text="{Binding TacticalMax, 
+                                            UpdateSourceTrigger=PropertyChanged, 
+                                            ValidatesOnNotifyDataErrors=True}"/>
+            </StackPanel>
+
+            <Separator Margin="0 10"/>
+            <TextBlock Text="Power Curve" FontSize="15" FontWeight="Black"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <TextBlock Text="Start"/>
+                <TextBlock Text=" - " VerticalAlignment="Center"/>
+                <TextBox Width="50" Text="{Binding PowerCurveStart, 
+                UpdateSourceTrigger=PropertyChanged, 
+                ValidatesOnNotifyDataErrors=True}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <TextBlock Text="Mid"/>
+                <TextBlock Text=" - " VerticalAlignment="Center"/>
+                <TextBox Width="50" Text="{Binding PowerCurveMid, 
+                UpdateSourceTrigger=PropertyChanged, 
+                ValidatesOnNotifyDataErrors=True}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <TextBlock Text="End"/>
+                <TextBlock Text=" - " VerticalAlignment="Center"/>
+                <TextBox Width="50" Text="{Binding PowerCurveEnd, 
+                UpdateSourceTrigger=PropertyChanged, 
+                ValidatesOnNotifyDataErrors=True}"/>
+            </StackPanel>
+            <Separator Margin="0 10"/>
+                <!--#region Champion Strengths -->
+                <Border Background="#F9F9F9" CornerRadius="5" Padding="10" Margin="0,10,0,0">
+                <StackPanel>
+                    <Grid Margin="0,0,0,10">
+                            <TextBlock Text="Champion Strengths" FontWeight="Bold" FontSize="14" Foreground="#1E1E24"/>
+                        <TextBlock Text="{Binding SelectedStrengthsCount, StringFormat='({0} Selected)'}" 
+                       HorizontalAlignment="Right" Foreground="#1E1E24" Opacity="0.6"/>
+                    </Grid>
+
+                        <TextBox Text="{Binding StrengthSearchText, UpdateSourceTrigger=PropertyChanged}"
+                             Margin="0,5" VerticalContentAlignment="Center" Padding="5,2">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="TextBox">
+                                            <Grid>
+                                                <Border x:Name="Border" Background="White" BorderBrush="#CCC" 
+                                            BorderThickness="1" CornerRadius="3"/>
+                                                <TextBlock x:Name="Placeholder" Text="Filter strengths..." 
+                                               Foreground="#1E1E24" IsHitTestVisible="False"
+                                               VerticalAlignment="Center" Margin="7,0,0,0" 
+                                               Visibility="Collapsed"/>
+                                                <ScrollViewer x:Name="PART_ContentHost" Margin="2"/>
+                                            </Grid>
+                                            <ControlTemplate.Triggers>
+                                                <MultiTrigger>
+                                                    <MultiTrigger.Conditions>
+                                                        <Condition Property="Text" Value=""/>
+                                                        <Condition Property="IsKeyboardFocusWithin" Value="False"/>
+                                                    </MultiTrigger.Conditions>
+                                                    <Setter TargetName="Placeholder" Property="Visibility" Value="Visible"/>
+                                                </MultiTrigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+
+                    <Border BorderBrush="#CCC" BorderThickness="1" Height="250" Background="White">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding FilteredStrengths}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border x:Name="ItemBorder" BorderBrush="#EEE" BorderThickness="0,0,0,1" Padding="8">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="35"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="140"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <CheckBox IsChecked="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}" 
+                                              VerticalAlignment="Center" HorizontalAlignment="Center"/>
+
+                                                <StackPanel Grid.Column="1" Margin="10,0">
+                                                        <TextBlock Text="{Binding Title}" FontWeight="Bold" Foreground="#1E1E24"/>
+                                                        <TextBlock Text="{Binding Description}" FontSize="11" Foreground="#1E1E24" 
+                                                   Opacity="0.6" TextWrapping="Wrap"/>
+                                                </StackPanel>
+
+                                                <StackPanel Grid.Column="2" VerticalAlignment="Center" x:Name="ValuePanel"
+                                                IsEnabled="{Binding IsSelected}">
+                                                    <TextBlock Text="{Binding Value, StringFormat='Power: {0}'}" 
+                                                   FontSize="10" Foreground="#1E1E24" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                                                    <Slider Minimum="0" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="True"
+                                                Value="{Binding Value, UpdateSourceTrigger=PropertyChanged}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+
+                                        <DataTemplate.Triggers>
+                                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                <Setter TargetName="ItemBorder" Property="Background" Value="#F0F9FF"/>
+                                                <Setter TargetName="ValuePanel" Property="Opacity" Value="1.0"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsSelected}" Value="False">
+                                                <Setter TargetName="ValuePanel" Property="Opacity" Value="0.3"/>
+                                            </DataTrigger>
+                                        </DataTemplate.Triggers>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Border>
+                </StackPanel>
+            </Border>
+                <!--#endregion -->
+                <Separator Margin="0 10"/>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Cancel"
+                        Width="80"
+                        Margin="0 0 5 0"
+                        Command="{Binding CancelCommand}"/>
+                <Button Content="Save"
+                        Width="80"
+                        Command="{Binding SaveCommand}"/>
+            </StackPanel>
+
+        </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Window>
