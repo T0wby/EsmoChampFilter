@@ -90,7 +90,12 @@ namespace EsmoChamps.Data
                 new StrengthTitle { Id = 17, Title = "Cleanup", Description = "The ability to chase down and finish off low-health enemies after a fight." },
                 new StrengthTitle { Id = 18, Title = "Poke", Description = "The ability to deal damage from a long range without fully committing to a fight." },
                 new StrengthTitle { Id = 19, Title = "Lane Dominance", Description = "Strength in controlling the early laning phase and suppressing the opponent." },
-                new StrengthTitle { Id = 20, Title = "Snowball", Description = "The ability to convert an early lead into an unstoppable advantage." }
+                new StrengthTitle { Id = 20, Title = "Snowball", Description = "The ability to convert an early lead into an unstoppable advantage." },
+                new StrengthTitle { Id = 21, Title = "Disengage", Description = "The ability to stop a fight, push enemies away and retreat safely." },
+                new StrengthTitle { Id = 22, Title = "Stealth", Description = "The ability to become invisible or camouflaged to surprise enemies or escape." },
+                new StrengthTitle { Id = 23, Title = "Invasion", Description = "The ability to enter enemy territory tp steal resources or kill the enemy jungler." },
+                new StrengthTitle { Id = 24, Title = "Kiting", Description = "The ability to deal damage while moving away to maintain a safe distance from enemies." },
+                new StrengthTitle { Id = 25, Title = "Fight Resets", Description = "Mechanics that refresh ability cooldowns or resources upon getting a takedown." }
             );
         }
     }

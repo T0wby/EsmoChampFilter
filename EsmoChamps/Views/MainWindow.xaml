@@ -7,6 +7,7 @@
         Title="Champion Viewer" 
         Height="700" 
         Width="1400"
+        WindowState="Maximized"
         WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
@@ -66,6 +67,15 @@
                             </Style>
                         </TextBox.Style>
                     </TextBox>
+
+                    <TextBlock Text="Sorting" FontSize="12" Opacity="0.7" Margin="0,0,0,5"/>
+                    <ComboBox ItemsSource="{Binding AvailableSortingOptions}"
+                              SelectedItem="{Binding SelectedSortingOption}"
+                              Padding="8"
+                              Margin="0,0,0,15"
+                              Background="#2A2A32"
+                              Foreground="#2A2A32"
+                              BorderBrush="#3A3A44"/>
 
                     <!-- Role Filter -->
                     <TextBlock Text="Role" FontSize="12" Opacity="0.7" Margin="0,0,0,5"/>
