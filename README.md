@@ -81,8 +81,8 @@ EsmoChamps is a champion management system designed to help you filter, sort, an
 
 ### Adding Champion Images
 1. Place your champion images in: `Documents\EsmoChamps\ChampionImages\`
-2. Name them exactly as the champion name (e.g., `Ahri.png`)
-3. For old/classic versions, add `_old` suffix (e.g., `Ahri_old.png`)
+2. Name them exactly as the champion name (e.g., `Automata.png`)
+3. For old/classic versions, add `_old` suffix (e.g., `Automata_old.png`)
 4. Supported formats: PNG, JPG, JPEG, BMP
 
 ## 📖 Usage Guide
