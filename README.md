@@ -1,4 +1,4 @@
-# EsmoChamps - Champion Database Manager
+# EsmoChampFilter - Champion Database Manager
 
 A WPF desktop application for managing and analyzing champion data from the online game [ESMO](https://esmo.gg).
 
@@ -122,6 +122,7 @@ EsmoChamps is a champion management system designed to help you filter, sort, an
   - Complete list of strengths with values
   - Champion image (if available)
  <img width="1400" height="800" alt="EsmoChamps_8L3LXs0pAU" src="https://github.com/user-attachments/assets/b7d43ff6-dc6f-4cf3-a168-248c67e38301" />
+ <img width="884" height="861" alt="image" src="https://github.com/user-attachments/assets/16c0c336-d495-43c3-8a45-b01026e93452" />
 
 ### Image Version Toggle
 - Click **"🕰 Old Versions"** button in the top bar
