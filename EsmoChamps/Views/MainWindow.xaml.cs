@@ -7,6 +7,7 @@ using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -24,6 +25,7 @@ namespace EsmoChamps
             InitializeComponent();
 
             DataContext = new MainViewModel();
+            this.PreviewKeyDown += MainWindow_PreviewKeyDown;
         }
 
         private void Card_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -141,49 +143,170 @@ namespace EsmoChamps
             if (image == null) return;
 
             string imageName = image.Tag as string;
-
+            var success = false;
             if (!string.IsNullOrEmpty(imageName))
             {
-                string imagePath = ImageManager.GetImagePath(imageName);
-
-                if (imagePath != null && File.Exists(imagePath))
-                {
-                    try
-                    {
-                        BitmapImage bitmap = new BitmapImage();
-                        bitmap.BeginInit();
-                        bitmap.UriSource = new Uri(imagePath, UriKind.Absolute);
-                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                        bitmap.DecodePixelWidth = 50; // Optimize for card size
-                        bitmap.EndInit();
-                        bitmap.Freeze();
-
-                        image.Source = bitmap;
-
-                        // Hide the fallback letter
-                        var parent = VisualTreeHelper.GetParent(image) as Grid;
-                        if (parent != null)
-                        {
-                            var letter = parent.Children.OfType<TextBlock>().FirstOrDefault();
-                            if (letter != null)
-                            {
-                                letter.Visibility = Visibility.Collapsed;
-                            }
-                        }
-                        return;
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Failed to load card image: {ex.Message}");
-                    }
-                }
+                success = LoadCardImage(image, imageName);
             }
+
+            if(success) return;
 
             // Show fallback letter if image loading failed
             var parentGrid = VisualTreeHelper.GetParent(image) as Grid;
             if (parentGrid != null)
             {
                 var letter = parentGrid.Children.OfType<TextBlock>().FirstOrDefault();
+                if (letter != null)
+                {
+                    letter.Visibility = Visibility.Visible;
+                }
+            }
+        }
+
+        private void MainWindow_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            // Don't handle shortcuts if user is typing in a TextBox or ComboBox
+            if (Keyboard.FocusedElement is TextBox || Keyboard.FocusedElement is ComboBox)
+            {
+                // Exception: Allow Ctrl+N and Ctrl+F even when typing
+                if (!(e.KeyboardDevice.Modifiers == ModifierKeys.Control && (e.Key == Key.N || e.Key == Key.F)))
+                    return;
+            }
+
+            var vm = DataContext as MainViewModel;
+            if (vm == null) return;
+
+            bool isCtrlPressed = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
+
+            switch (e.Key)
+            {
+                case Key.E:
+                    if (!isCtrlPressed && vm.EditChampionCommand.CanExecute(null))
+                    {
+                        vm.EditChampionCommand.Execute(null);
+                        e.Handled = true;
+                    }
+                    break;
+
+                case Key.Delete:
+                    if (!isCtrlPressed && vm.DeleteCommand.CanExecute(null))
+                    {
+                        vm.DeleteCommand.Execute(null);
+                        e.Handled = true;
+                    }
+                    break;
+
+                case Key.Enter:
+                    if (!isCtrlPressed && vm.OpenChampionDetailsCommand.CanExecute(null))
+                    {
+                        vm.OpenChampionDetailsCommand.Execute(null);
+                        e.Handled = true;
+                    }
+                    break;
+
+                case Key.N:
+                    if (isCtrlPressed && vm.OpenAddChampionCommand.CanExecute(null))
+                    {
+                        vm.OpenAddChampionCommand.Execute(null);
+                        e.Handled = true;
+                    }
+                    break;
+
+                case Key.F:
+                    if (isCtrlPressed && vm.ClearFiltersCommand.CanExecute(null))
+                    {
+                        vm.ClearFiltersCommand.Execute(null);
+                        e.Handled = true;
+                    }
+                    break;
+            }
+        }
+
+        private void OldImagesToggle_Click(object sender, RoutedEventArgs e)
+        {
+            var toggleButton = sender as ToggleButton;
+            if (toggleButton != null)
+            {
+                ImageManager.UseOldImages = toggleButton.IsChecked == true;
+
+                RefreshAllCardImages();
+            }
+        }
+
+        private void RefreshAllCardImages()
+        {
+            var scrollViewer = FindName("ChampionScrollViewer") as ScrollViewer;
+            if (scrollViewer != null)
+            {
+                var itemsControl = FindVisualChild<ItemsControl>(scrollViewer);
+                if (itemsControl != null)
+                {
+                    var images = FindVisualChildren<Image>(itemsControl)
+                        .Where(img => img.Name == "ChampionCardImage");
+
+                    foreach (var image in images)
+                    {
+                        string imageName = image.Tag as string;
+                        if (!string.IsNullOrEmpty(imageName))
+                        {
+                            LoadCardImage(image, imageName);
+                        }
+                    }
+                }
+            }
+        }
+
+        private bool LoadCardImage(Image image, string imageName)
+        {
+            string imagePath = ImageManager.GetImagePath(imageName);
+
+            if (imagePath != null && System.IO.File.Exists(imagePath))
+            {
+                try
+                {
+                    var bitmap = new System.Windows.Media.Imaging.BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.UriSource = new Uri(imagePath, UriKind.Absolute);
+                    bitmap.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+                    bitmap.DecodePixelWidth = 50;
+                    bitmap.EndInit();
+                    bitmap.Freeze();
+
+                    image.Source = bitmap;
+
+                    // Hide fallback letter
+                    var parent = System.Windows.Media.VisualTreeHelper.GetParent(image) as Grid;
+                    if (parent != null)
+                    {
+                        var letter = parent.Children.OfType<TextBlock>().FirstOrDefault();
+                        if (letter != null)
+                        {
+                            letter.Visibility = Visibility.Collapsed;
+                        }
+                    }
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Failed to load card image: {ex.Message}");
+                    ShowFallbackLetter(image);
+                    return false;
+                }
+            }
+            else
+            {
+                ShowFallbackLetter(image);
+                return false;
+            }
+        }
+
+        private void ShowFallbackLetter(Image image)
+        {
+            image.Source = null;
+            var parent = System.Windows.Media.VisualTreeHelper.GetParent(image) as Grid;
+            if (parent != null)
+            {
+                var letter = parent.Children.OfType<TextBlock>().FirstOrDefault();
                 if (letter != null)
                 {
                     letter.Visibility = Visibility.Visible;

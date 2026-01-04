@@ -2,6 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:converter="clr-namespace:EsmoChamps.Converters"
+        xmlns:properties="clr-namespace:EsmoChamps.Properties"
         Background="#1E1E24"
         Foreground="White"
         Title="Champion Viewer" 
@@ -15,13 +16,13 @@
         <converter:IsSelectedConverter x:Key="IsSelectedConverter"/>
         <converter:NotZeroConverter x:Key="NotZeroConverter"/>
     </Window.Resources>
-    <Window.InputBindings>
+    <!--<Window.InputBindings>
         <KeyBinding Key="E" Command="{Binding EditChampionCommand}"/>
         <KeyBinding Key="Delete" Command="{Binding DeleteCommand}"/>
         <KeyBinding Key="Enter" Command="{Binding OpenChampionDetailsCommand}"/>
         <KeyBinding Key="N" Modifiers="Ctrl" Command="{Binding OpenAddChampionCommand}"/>
         <KeyBinding Key="F" Modifiers="Ctrl" Command="{Binding ClearFiltersCommand}"/>
-    </Window.InputBindings>
+    </Window.InputBindings>-->
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -124,10 +125,13 @@
                                FontSize="12" 
                                FontWeight="SemiBold"
                                Opacity="0.9" 
+                               Visibility="Collapsed"
                                Margin="0,0,0,10"/>
 
-                    <TextBlock Text="Mechanics" FontSize="11" Opacity="0.7" Margin="0,5,0,5"/>
-                    <Grid>
+                    <TextBlock Text="Mechanics" 
+                               Visibility="Collapsed"
+                               FontSize="11" Opacity="0.7" Margin="0,5,0,5"/>
+                    <Grid Visibility="Collapsed">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition Width="Auto"/>
@@ -148,8 +152,10 @@
                                  BorderBrush="#3A3A44"/>
                     </Grid>
 
-                    <TextBlock Text="Macro" FontSize="11" Opacity="0.7" Margin="0,10,0,5"/>
-                    <Grid>
+                    <TextBlock Text="Macro" 
+                               Visibility="Collapsed"
+                               FontSize="11" Opacity="0.7" Margin="0,10,0,5"/>
+                    <Grid Visibility="Collapsed">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition Width="Auto"/>
@@ -170,8 +176,10 @@
                                  BorderBrush="#3A3A44"/>
                     </Grid>
 
-                    <TextBlock Text="Tactical" FontSize="11" Opacity="0.7" Margin="0,10,0,5"/>
-                    <Grid>
+                    <TextBlock Text="Tactical" 
+                               Visibility="Collapsed"
+                               FontSize="11" Opacity="0.7" Margin="0,10,0,5"/>
+                    <Grid Visibility="Collapsed">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition Width="Auto"/>
@@ -359,6 +367,47 @@
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <ToggleButton x:Name="OldImagesToggle"
+                                      IsChecked="{Binding Source={x:Static properties:Settings.Default}, 
+                                                  Path=UseOldImages, 
+                                                  Mode=TwoWay}"
+                                      Click="OldImagesToggle_Click"
+                                      Padding="15,8"
+                                      Foreground="White"
+                                      BorderThickness="0"
+                                      Cursor="Hand"
+                                      Margin="0,0,10,0"
+                                      ToolTip="Toggle between current and old champion images">
+                            <ToggleButton.Style>
+                                <Style TargetType="ToggleButton">
+                                    <Setter Property="Background" Value="#3A3A44"/>
+                                    <Setter Property="Content" Value="🕰 Old Image Version"/>
+
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ToggleButton">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        CornerRadius="4"
+                                                        Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter HorizontalAlignment="Center"
+                                                                      VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+
+                                    <Style.Triggers>
+                                        <Trigger Property="IsChecked" Value="True">
+                                            <Setter Property="Background" Value="#9B8CFF"/>
+                                            <Setter Property="Content" Value="🕰 Old Image Version"/>
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Opacity" Value="0.8"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ToggleButton.Style>
+                        </ToggleButton>
                         <Button Content="📁 Open Images Folder"
                                 Command="{Binding OpenImagesFolderCommand}"
                                 Padding="15,8"
@@ -511,7 +560,7 @@
                                             </Grid.RowDefinitions>
 
                                             <TextBlock Grid.Row="0" Grid.Column="0" 
-                                                       Text="Mecha:" FontSize="10" 
+                                                       Text="Mechanics:" FontSize="10" 
                                                        Margin="0,0,5,3" Opacity="0.7"/>
                                             <Grid Grid.Row="0" Grid.Column="1" Height="8" Margin="0,0,0,3" Background="#2A2A32">
                                                 <Grid.ColumnDefinitions>
@@ -584,7 +633,7 @@
                                             </Grid>
 
                                             <TextBlock Grid.Row="2" Grid.Column="0" 
-                                                       Text="Tacti:" FontSize="10" 
+                                                       Text="Tactical:" FontSize="10" 
                                                        Margin="0,0,5,0" Opacity="0.7"/>
                                             <Grid Grid.Row="2" Grid.Column="1" Height="8" Margin="0,0,0,3" Background="#2A2A32">
                                                 <Grid.ColumnDefinitions>

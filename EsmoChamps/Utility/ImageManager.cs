@@ -19,6 +19,16 @@ namespace EsmoChamps.Utility
             "ChampionImages"
         );
 
+        public static bool UseOldImages
+        {
+            get => Properties.Settings.Default.UseOldImages;
+            set
+            {
+                Properties.Settings.Default.UseOldImages = value;
+                Properties.Settings.Default.Save(); // Persists to disk immediately
+            }
+        }
+
         /// <summary>
         /// Initializes the user images folder and copies default images from Assets
         /// </summary>
@@ -114,8 +124,34 @@ Location: " + UserImagesFolder;
             if (string.IsNullOrEmpty(imageName))
                 return null;
 
+            string fileName = imageName;
+
+            if (UseOldImages)
+            {
+                string oldVersionName = GetOldVersionName(imageName);
+                string oldVersionPath = Path.Combine(UserImagesFolder, oldVersionName);
+
+                if (File.Exists(oldVersionPath))
+                {
+                    return oldVersionPath;
+                }
+
+                System.Diagnostics.Debug.WriteLine($"Old version not found for {imageName}, using regular version");
+            }
+
             string fullPath = Path.Combine(UserImagesFolder, imageName);
             return File.Exists(fullPath) ? fullPath : null;
+        }
+
+        /// <summary>
+        /// Converts a filename to its "_old" version
+        /// e.g., "Pembroke.png" -> "Pembroke_old.png"
+        /// </summary>
+        private static string GetOldVersionName(string imageName)
+        {
+            string extension = Path.GetExtension(imageName);
+            string nameWithoutExtension = Path.GetFileNameWithoutExtension(imageName);
+            return $"{nameWithoutExtension}_old{extension}";
         }
 
         /// <summary>

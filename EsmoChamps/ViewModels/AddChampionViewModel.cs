@@ -361,7 +361,7 @@ namespace EsmoChamps.ViewModels
             {
                 Id = ChampionId,
                 Name = Name,
-                ImagePath = ImagePath,
+                ImagePath = ImagePath ?? String.Empty,
                 RoleId = SelectedRoleId,
                 RangeTypeId = SelectedRangeTypeId,
                 ChampTypeId = SelectedChampTypeId,

@@ -245,17 +245,12 @@ namespace EsmoChamps.Views
                     bitmap.Freeze();
 
                     ChampionImage.Source = bitmap;
-                    System.Diagnostics.Debug.WriteLine($"Successfully loaded image for {vm.Name}");
                     return;
                 }
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.WriteLine($"Failed to load image: {ex.Message}");
                 }
-            }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine($"Image file not found: {imagePath}");
             }
 
             DrawDefaultIcon(vm.Name);

@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -75,6 +76,7 @@ namespace EsmoChamps.ViewModels
             get => _searchText;
             set
             {
+                if (_searchText.Equals(value)) return;
                 _searchText = value;
                 OnPropertyChanged();
                 ApplyFilters();
@@ -88,6 +90,7 @@ namespace EsmoChamps.ViewModels
             get => _strengthSearchText;
             set
             {
+                if (_strengthSearchText.Equals(value)) return;
                 _strengthSearchText = value;
                 OnPropertyChanged();
                 FilterStrengthsForFilter();
@@ -323,7 +326,8 @@ namespace EsmoChamps.ViewModels
 
         private void DeleteChampion()
         {
-            if (!_confirmationService.Confirm($"Delete '{SelectedChampion.Name}'?","Confirm Delete"))
+            if (SelectedChampion == null) return;
+            if (!_confirmationService.Confirm($"Delete '{SelectedChampion?.Name}'?","Confirm Delete"))
             {
                 return;
             }
@@ -331,7 +335,8 @@ namespace EsmoChamps.ViewModels
             db.Champions.Remove(SelectedChampion);
             db.SaveChanges();
 
-            Champions.Remove(SelectedChampion);
+            AllChampions.Remove(SelectedChampion);
+            ReloadChampions();
         }
 
         private void ReloadChampions()
@@ -614,5 +619,7 @@ namespace EsmoChamps.ViewModels
             }
         }
         #endregion
+
+        
     }
 }
